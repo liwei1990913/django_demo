@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>请选择城市</h1>
+<form  method="post" onsubmit="return func()">
+    {% csrf_token %}
+<select id="pro" name="pro" >
+    <option value="">请选择省</option>
+</select>
+<select id="city" name="city"  >
+    <option value="">请选择市</option>
+</select>
+<select id="county" name="county" >
+    <option value="">请选择区县</option>
+</select>
+<input type="text" name="detail" placeholder="详细地址" id="detail" >
+    <input type="submit" value="提交">
+    </form>
+</body>
+
+<script src="/static/js/jquery.min.js"></script>
+<script>
+     $(function () {
+         //获取所有省份
+         $.get('/edu/province/', function (dic) {
+             var dic=JSON.parse(dic)
+
+             $.each(dic, function (index, item) {
+                 $('#pro').append('<option value=' + item[0] + '>' + item[1] + '</option>');
+             })
+         });
+          $('#pro').change(function () {
+                $.get('/edu/city_' + $(this).val() + '/', function (dict) {
+                    dict=JSON.parse(dict)
+                    city = $('#city');
+                    city.empty().append('<option value="">请选择市</option>');
+                    $('#county').empty().append('<option value="">请选择区县</option>');
+                    $.each(dict, function (index, item) {
+                        city.append('<option value=' + item[0] + '>' + item[1] + '</option>');
+                    })
+                });
+            });
+            $('#city').change(function () {
+                $.get('/edu/county_' + $(this).val() + '/', function (dict) {
+                    dict=JSON.parse(dict)
+                    county = $('#county');
+                    county.empty().append('<option value="">请选择区县</option>');
+                    $.each(dict, function (index, item) {
+                        county.append('<option value=' + item[0]+ '>' + item[1] + '</option>');
+                    })
+                })
+            });
+
+
+
+     });
+      function func() {
+
+             if ( !$('#city').val()||!$('#pro').val()||!$('#county').val()||!$('#detail').val()){
+                alert('请输入正确的地址')
+                 return false
+             }
+
+         }
+
+
+</script>
+</html>
